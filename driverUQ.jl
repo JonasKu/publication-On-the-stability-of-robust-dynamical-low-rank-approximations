@@ -29,7 +29,7 @@ for j = 1:s.NCells
 end
 
 #r = [2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12; 13; 14; 15; 16]
-r = [10;];
+r = [5;10;];
 cfl = [0.1;0.2;0.3;0.4;0.5;0.6;0.7;0.8; 0.9; 1.0;]
 errorPS = zeros(length(r),length(cfl));
 errorPS1 = zeros(length(r),length(cfl));
@@ -105,6 +105,9 @@ for k = 1:length(r)
 end
 println("-> DLR Unconventional Integrator DONE.")
 
+maxVal = max(maximum(errorUI[2,:]),maximum(errorPS2[2,:]),maximum(errorPS[1,:]))*1.005;
+minVal = min(minimum(errorUI[2,:]),minimum(errorPS2[2,:]),minimum(errorPS[1,:]))*0.9;
+
 for k = 1:length(r)
     if r[k] == 5
         fig = figure("Figure7a",figsize=(10, 7), dpi=100)#, facecolor='w', edgecolor='k') # dpi Aufloesung
@@ -121,11 +124,7 @@ for k = 1:length(r)
     ylabel(L"error E[$u$]", fontsize=20)
     xlabel("CFL", fontsize=20)
     ax.set_xlim([cfl[1],cfl[end]])
-    maxVal = max(maximum(errorUI[k,:]),maximum(errorPS2[k,:]),maximum(errorPS[k,:]))*1.005;;
-    minVal = min(minimum(errorUI[k,:]),minimum(errorPS2[k,:]),minimum(errorPS[k,:]))*0.995;;
-    if r[k] == 5
-        ax.set_ylim([minVal,maxVal])
-    end
+    ax.set_ylim([minVal,maxVal])
     ax.legend(loc="upper right", fontsize=20)
     ax.tick_params("both",labelsize=20) 
     fig.canvas.draw() # Update the figure
@@ -134,6 +133,8 @@ for k = 1:length(r)
 end
 
 if s.problem == "UQ"
+    maxValVar = max(maximum(errorUIVar[2,:]),maximum(errorPS2Var[2,:]),maximum(errorPSVar[1,:]))*1.005;
+    minValVar = min(minimum(errorUIVar[2,:]),minimum(errorPS2Var[2,:]),minimum(errorPSVar[1,:]))*0.995;
     for k = 1:length(r)
         if r[k] == 5
             fig = figure("Figure7b",figsize=(10, 7), dpi=100)#, facecolor='w', edgecolor='k') # dpi Aufloesung
@@ -147,13 +148,10 @@ if s.problem == "UQ"
         ax.plot(cfl,errorPS2Var[k,:], "r:+", linewidth=2, label="projector-splitting (DLRA first)", alpha=1.0)
         ax.plot(cfl,errorUIVar[k,:], "b-.o", linewidth=2, label="unconventional", alpha=1.0)
         
-
         ylabel(L"error $\sigma_u$", fontsize=20)
         xlabel("CFL", fontsize=20)
         ax.set_xlim([cfl[1],cfl[end]])
-        if r[k] == 5
-            ax.set_ylim([min(minimum(errorUIVar[k,:]),minimum(errorPS2Var[k,:]),minimum(errorPSVar[k,:])),max(maximum(errorUIVar[k,:]),maximum(errorPS2Var[k,:]),maximum(errorPSVar[k,:]))])
-        end
+        ax.set_ylim([minValVar,maxValVar])
         ax.legend(loc="upper right", fontsize=20)
         ax.tick_params("both",labelsize=20) 
         fig.canvas.draw() # Update the figure
